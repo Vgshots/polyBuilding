@@ -4,10 +4,8 @@ body {
     margin: 0;
     padding: 0;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
     flex-direction: column;
+    align-items: center;
 }
 
 .table-container {
@@ -18,10 +16,8 @@ body {
     border-radius: 16px;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
     padding: 20px;
-    box-sizing: border-box;
+    margin-bottom: 20px;
     text-align: center;
-    overflow: hidden;
-    margin: 20px 0;
 }
 
 .language-toggle {
@@ -32,27 +28,24 @@ body {
 
 .language-toggle button {
     font-size: 18px;
-    padding: 12px 24px;
+    padding: 10px 20px;
     border: none;
     border-radius: 12px;
-    background: linear-gradient(45deg, #009879, #007a63);
-    color: #ffffff;
+    background: #007a63;
+    color: #fff;
     cursor: pointer;
-    transition: background 0.3s ease, transform 0.2s ease;
+    transition: background 0.3s ease;
 }
 
 .language-toggle button:hover {
-    background: linear-gradient(45deg, #007a63, #009879);
-    transform: scale(1.05);
+    background: #005b48;
 }
 
 .table-title {
     color: #333;
-    font-size: 2.5em;
+    font-size: 2em;
     margin-bottom: 20px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-weight: bold;
-    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
 }
 
 .styled-table {
@@ -63,31 +56,70 @@ body {
 .styled-table thead {
     background: linear-gradient(45deg, #009879, #007a63);
     color: #ffffff;
-    text-align: left;
 }
 
 .styled-table th,
 .styled-table td {
-    padding: 15px;
+    padding: 12px 15px;
     text-align: left;
-    font-size: 1.2em;
-}
-
-.styled-table tbody tr {
-    border-bottom: 1px solid #dddddd;
 }
 
 .styled-table tbody tr:nth-of-type(even) {
     background-color: #f9f9f9;
 }
 
-.styled-table tbody tr:last-of-type {
-    border-bottom: 2px solid #009879;
-}
-
 .styled-table tbody tr:hover {
     background-color: #f1f1f1;
+}
+
+.styled-table button {
+    padding: 8px 12px;
+    border: none;
+    background-color: #007a63;
+    color: #fff;
+    border-radius: 5px;
     cursor: pointer;
+}
+
+.styled-table button:hover {
+    background-color: #005b48;
+}
+
+.map {
+    position: relative;
+    width: 100%;
+    max-width: 1000px;
+    height: 80vh;
+    overflow: hidden;
+    border: 2px solid #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#map-image {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    transition: transform 0.3s ease-out;
+}
+
+.zoom-controls {
+    margin: 20px;
+}
+
+.reset-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 12px;
+    background: #007a63;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.reset-button:hover {
+    background: #005b48;
 }
 
 .watermark {
@@ -95,34 +127,43 @@ body {
     top: 20px;
     left: 20px;
     width: 60px;
-    /* Size same as the language button */
-    height: auto;
-    /* Maintain aspect ratio */
-    opacity: 1;
-    /* Make it subtle */
-    pointer-events: none;
-    /* Prevent interaction */
+    opacity: 0.2;
+}
+
+.footer {
+    margin-top: 30px;
+    font-size: 12px;
+    color: #777;
 }
 
 @media (max-width: 768px) {
     .table-title {
-        font-size: 2em;
-        margin-bottom: 60px;
-        /* Ensure enough space for the button */
+        font-size: 1.5em;
     }
 
+    .styled-table th,
+    .styled-table td {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .language-toggle button,
+    .reset-button {
+        font-size: 16px;
+        padding: 8px 16px;
+    }
+}
+
+@media (max-width: 480px) {
     .language-toggle {
-        top: 10px;
-        right: 10px;
+        top: 5px;
+        /* Further adjust top positioning for very small screens */
+        right: 5px;
+        /* Further adjust right positioning for very small screens */
     }
 
     .language-toggle button {
-        font-size: 16px;
-        padding: 5px 20px;
-    }
-
-    .watermark {
-        width: 40px;
-        /* Adjust size for smaller screens */
+        font-size: 14px;
+        padding: 6px 12px;
     }
 }

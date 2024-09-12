@@ -12,11 +12,13 @@
 <body>
 
     <div class="table-container">
+
         <div class="language-toggle">
             <button id="toggle-language" onclick="toggleLanguage()">🔄 العربية</button>
         </div>
         <img src="https://hackfest.polytechnic.bh/wp-content/uploads/sites/9/2019/12/polytechnic-new.png"
             alt="Watermark" class="watermark">
+
         <h1 class="table-title">🏢 polytechnic Building Information</h1>
         <table class="styled-table">
             <thead>
@@ -108,9 +110,20 @@
                 </tr>
             </tbody>
         </table>
-
-
     </div>
+
+    <div class="map" id="map-container">
+        <img id="map-image" src="https://i.imghippo.com/files/8vsPe1726104820.jpg" alt="Campus Map">
+    </div>
+
+    <div class="zoom-controls">
+        <button class="reset-button" onclick="resetZoom()">Reset Zoom</button>
+    </div>
+
+    <div class="footer">
+        <p>© 2020 Polytechnic Bahrain. All rights reserved.</p>
+    </div>
+
 </body>
 
 </html>
