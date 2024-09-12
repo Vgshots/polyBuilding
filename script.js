@@ -2,7 +2,7 @@ function toggleLanguage() {
     const isArabic = document.body.getAttribute('data-language') === 'ar';
     const translations = {
         en: {
-            title: '🏢 Building Information',
+            title: '🏢 polytechnic Building Information',
             headers: ['🏛️ Building Number', '📋 Description/Usage'],
             cells: {
                 'مختبرات تكنولوجيا المعلومات 🖥️': 'IT Labs 🖥️',
