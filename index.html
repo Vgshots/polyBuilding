@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Building Information</title>
     <link rel="stylesheet" href="styles.css">
     <script src="script.js" defer></script>
@@ -112,13 +112,25 @@
         </table>
     </div>
 
+    <!-- First Map Section -->
     <div class="map" id="map-container">
         <img id="map-image" src="https://i.imghippo.com/files/8vsPe1726104820.jpg" alt="Campus Map">
     </div>
 
     <div class="zoom-controls">
-        <button class="reset-button" onclick="resetZoom()">Reset Zoom</button>
+        <button class="reset-button" onclick="resetZoom(0)">Reset Zoom</button>
     </div>
+
+    <!-- Second Map Section -->
+    <div class="map" id="map-container-2">
+        <img id="second-map-image" src="https://i.imghippo.com/files/rvHrT1726451067.jpg" alt="New Campus Map">
+    </div>
+
+    <div class="zoom-controls">
+        <button class="reset-button" onclick="resetZoom(1)">Reset Zoom (New Map)</button>
+    </div>
+
+
 
     <div class="footer">
         <p>© 2020 Polytechnic Bahrain. All rights reserved.</p>

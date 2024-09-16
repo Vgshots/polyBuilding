@@ -73,126 +73,128 @@ function toggleLanguage() {
 
 
 
-let scale = 1;
-let mapImage = document.getElementById('map-image');
-let isPanning = false;
-let startX, startY, offsetX = 0, offsetY = 0, initialOffsetX = 0, initialOffsetY = 0;
-let initialDistance = 0;
-let animationFrameId = null;
 
-// Zoom to a specific location (from table button click)
-function scrollToMap() {
-    const mapContainer = document.querySelector('.map');
-    if (mapContainer) {
-        mapContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+// Variables for both maps
+const maps = [
+    {
+        image: document.getElementById('map-image'),
+        scale: 1,
+        isPanning: false,
+        startX: 0, startY: 0, offsetX: 0, offsetY: 0, initialOffsetX: 0, initialOffsetY: 0,
+        initialDistance: 0,
+        animationFrameId: null,
+    },
+    {
+        image: document.getElementById('second-map-image'),
+        scale: 1,
+        isPanning: false,
+        startX: 0, startY: 0, offsetX: 0, offsetY: 0, initialOffsetX: 0, initialOffsetY: 0,
+        initialDistance: 0,
+        animationFrameId: null,
     }
+];
+
+// Helper function to handle map transformations
+function updateMapTransform(mapIndex) {
+    const map = maps[mapIndex];
+    map.image.style.transform = `translate(${map.offsetX}px, ${map.offsetY}px) scale(${map.scale})`;
 }
 
-// Zoom to a specific location (from table button click)
-function zoomToLocation(x, y, zoomLevel) {
-    console.log(`Zooming to location: ${x}, ${y} with zoom level: ${zoomLevel}`);
-
-    scale = zoomLevel;
-
-    // Map dimensions
-    const mapWidth = 2481;  // Full map width
-    const mapHeight = 3508; // Full map height
-
-    // Center of the image
-    const imageWidth = mapImage.naturalWidth;
-    const imageHeight = mapImage.naturalHeight;
-
-    // Calculate the scaled coordinates
-    const scaledX = (x * scale) - (mapWidth / 2) + (imageWidth / 2);
-    const scaledY = (y * scale) - (mapHeight / 2) + (imageHeight / 2);
-
-    // Apply transform with adjusted offsets
-    mapImage.style.transform = `translate(${scaledX}px, ${scaledY}px) scale(${scale})`;
-
-    // Scroll the map container into view
-    scrollToMap();
+// Reset zoom for a specific map
+function resetZoom(mapIndex) {
+    const map = maps[mapIndex];
+    map.scale = 1;
+    map.offsetX = 0;
+    map.offsetY = 0;
+    updateMapTransform(mapIndex);
 }
 
-// Reset zoom to default
-function resetZoom() {
-    scale = 1;
-    offsetX = 0;
-    offsetY = 0;
-    mapImage.style.transform = `translate(0px, 0px) scale(1)`;
-}
-
-// Handle mouse events for smooth panning
-mapImage.addEventListener('mousedown', (e) => {
+// Handle mouse events for panning
+function handleMouseDown(e, mapIndex) {
     if (e.button === 0) { // Left-click
-        isPanning = true;
-        startX = e.clientX;
-        startY = e.clientY;
-        initialOffsetX = offsetX;
-        initialOffsetY = offsetY;
-        mapImage.style.cursor = 'grabbing';
+        const map = maps[mapIndex];
+        map.isPanning = true;
+        map.startX = e.clientX;
+        map.startY = e.clientY;
+        map.initialOffsetX = map.offsetX;
+        map.initialOffsetY = map.offsetY;
+        map.image.style.cursor = 'grabbing';
     }
-});
+}
 
-mapImage.addEventListener('mousemove', (e) => {
-    if (!isPanning) return;
-    cancelAnimationFrame(animationFrameId);
+function handleMouseMove(e, mapIndex) {
+    const map = maps[mapIndex];
+    if (!map.isPanning) return;
 
-    offsetX = initialOffsetX + (e.clientX - startX);
-    offsetY = initialOffsetY + (e.clientY - startY);
+    map.offsetX = map.initialOffsetX + (e.clientX - map.startX);
+    map.offsetY = map.initialOffsetY + (e.clientY - map.startY);
 
-    animationFrameId = requestAnimationFrame(() => {
-        mapImage.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
-    });
-});
+    // Throttle the update to reduce lag
+    if (map.animationFrameId) cancelAnimationFrame(map.animationFrameId);
+    map.animationFrameId = requestAnimationFrame(() => updateMapTransform(mapIndex));
+}
 
-mapImage.addEventListener('mouseup', () => {
-    isPanning = false;
-    mapImage.style.cursor = 'grab';
-    cancelAnimationFrame(animationFrameId);
-});
+function handleMouseUp(e, mapIndex) {
+    const map = maps[mapIndex];
+    map.isPanning = false;
+    map.image.style.cursor = 'grab';
+    cancelAnimationFrame(map.animationFrameId);
+}
 
-mapImage.addEventListener('mouseleave', () => {
-    isPanning = false;
-    mapImage.style.cursor = 'grab';
-    cancelAnimationFrame(animationFrameId);
-});
+function handleMouseLeave(e, mapIndex) {
+    const map = maps[mapIndex];
+    map.isPanning = false;
+    map.image.style.cursor = 'grab';
+    cancelAnimationFrame(map.animationFrameId);
+}
 
-// Handle touch events for smooth panning and zooming
-mapImage.addEventListener('touchstart', (e) => {
+// Handle touch events for panning and zooming
+function handleTouchStart(e, mapIndex) {
+    const map = maps[mapIndex];
     if (e.touches.length === 1) {
-        isPanning = true;
-        startX = e.touches[0].clientX - offsetX;
-        startY = e.touches[0].clientY - offsetY;
+        map.isPanning = map.scale > 1; // Only enable panning if zoomed in
+        map.startX = e.touches[0].clientX - map.offsetX;
+        map.startY = e.touches[0].clientY - map.offsetY;
     } else if (e.touches.length === 2) {
-        isPanning = false;
-        initialDistance = getDistance(e.touches);
+        map.isPanning = false;
+        map.initialDistance = getDistance(e.touches);
     }
-});
+}
 
-mapImage.addEventListener('touchmove', (e) => {
-    e.preventDefault();
-    if (e.touches.length === 1 && isPanning) {
-        cancelAnimationFrame(animationFrameId);
+function handleTouchMove(e, mapIndex) {
+    const map = maps[mapIndex];
+    if (e.touches.length === 1 && map.isPanning) {
+        e.preventDefault(); // Prevent default scrolling behavior
 
-        offsetX = e.touches[0].clientX - startX;
-        offsetY = e.touches[0].clientY - startY;
+        map.offsetX = e.touches[0].clientX - map.startX;
+        map.offsetY = e.touches[0].clientY - map.startY;
 
-        animationFrameId = requestAnimationFrame(() => {
-            mapImage.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
-        });
+        // Throttle the update to reduce lag
+        if (map.animationFrameId) cancelAnimationFrame(map.animationFrameId);
+        map.animationFrameId = requestAnimationFrame(() => updateMapTransform(mapIndex));
     } else if (e.touches.length === 2) {
         let currentDistance = getDistance(e.touches);
-        let zoomDelta = currentDistance / initialDistance;
-        scale = Math.min(Math.max(0.5, scale * zoomDelta), 3); // Limit zoom
-        mapImage.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
-        initialDistance = currentDistance;
+        let zoomDelta = currentDistance / map.initialDistance;
+        map.scale = Math.min(Math.max(1, map.scale * zoomDelta), 3); // Limit zoom to 1x to 3x
+        updateMapTransform(mapIndex);
+        map.initialDistance = currentDistance;
     }
-});
+}
 
-mapImage.addEventListener('touchend', () => {
-    isPanning = false;
-    cancelAnimationFrame(animationFrameId);
-});
+function handleTouchEnd(e, mapIndex) {
+    const map = maps[mapIndex];
+    map.isPanning = false;
+    cancelAnimationFrame(map.animationFrameId);
+}
+
+// Handle mouse wheel for zooming
+function handleWheel(e, mapIndex) {
+    e.preventDefault();
+    const map = maps[mapIndex];
+    let zoomDelta = e.deltaY * -0.01; // Zoom in/out speed
+    map.scale = Math.min(Math.max(1, map.scale + zoomDelta), 3); // Limit zoom to 1x to 3x
+    updateMapTransform(mapIndex);
+}
 
 // Helper function to calculate the distance between two touch points
 function getDistance(touches) {
@@ -201,34 +203,64 @@ function getDistance(touches) {
     return Math.sqrt(dx * dx + dy * dy);
 }
 
-// Handle mouse wheel for zooming
-mapImage.addEventListener('wheel', (e) => {
-    e.preventDefault();
-    let zoomDelta = e.deltaY * -0.01; // Zoom in/out speed
-    scale = Math.min(Math.max(0.5, scale + zoomDelta), 3); // Limit zoom range
-    mapImage.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
-});
+// Function to adjust map container height
+function adjustMapContainers() {
+    maps.forEach(map => {
+        const mapContainer = map.image.parentElement;
+        if (map.image && mapContainer) {
+            const imageWidth = map.image.naturalWidth;
+            const imageHeight = map.image.naturalHeight;
 
+            const aspectRatio = imageWidth / imageHeight;
+            const containerWidth = mapContainer.clientWidth;
+            const containerHeight = containerWidth / aspectRatio;
 
-
-function adjustMapContainer() {
-    const mapImage = document.getElementById('map-image');
-    const mapContainer = document.querySelector('.map');
-
-    if (mapImage && mapContainer) {
-        const imageWidth = mapImage.naturalWidth;
-        const imageHeight = mapImage.naturalHeight;
-
-        const aspectRatio = imageWidth / imageHeight;
-        const containerWidth = mapContainer.clientWidth;
-        const containerHeight = containerWidth / aspectRatio;
-
-        mapContainer.style.height = `${containerHeight}px`;
-    }
+            mapContainer.style.height = `${containerHeight}px`;
+        }
+    });
 }
 
-// Call this function after the image is loaded
-window.onload = adjustMapContainer;
+// Attach event listeners for both maps
+function attachEventListeners() {
+    maps.forEach((map, index) => {
+        map.image.addEventListener('mousedown', (e) => handleMouseDown(e, index));
+        map.image.addEventListener('mousemove', (e) => handleMouseMove(e, index));
+        map.image.addEventListener('mouseup', (e) => handleMouseUp(e, index));
+        map.image.addEventListener('mouseleave', (e) => handleMouseLeave(e, index));
+        map.image.addEventListener('touchstart', (e) => handleTouchStart(e, index));
+        map.image.addEventListener('touchmove', (e) => handleTouchMove(e, index));
+        map.image.addEventListener('touchend', (e) => handleTouchEnd(e, index));
+        map.image.addEventListener('wheel', (e) => handleWheel(e, index));
+    });
+}
+
+// Call the adjustMapContainers function after the images are loaded
+window.onload = () => {
+    adjustMapContainers();
+    attachEventListeners();
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

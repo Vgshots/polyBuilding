@@ -89,7 +89,7 @@ body {
     position: relative;
     width: 100%;
     max-width: 1000px;
-    height: 80vh;
+    height: auto;
     overflow: hidden;
     border: 2px solid #ccc;
     display: flex;
@@ -97,7 +97,8 @@ body {
     align-items: center;
 }
 
-#map-image {
+#map-image,
+#second-map-image {
     width: 100%;
     height: auto;
     object-fit: contain;
